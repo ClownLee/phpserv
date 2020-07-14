@@ -1,0 +1,12 @@
+#!/bin/bash
+# 删除php
+docker stop change-php
+docker rm -f change-php
+
+docker rmi -f `docker images | grep 'clownlee/phpserv-php' | awk '{print $3}'`
+
+# 删除nginx
+docker stop change-nginx
+docker rm -f change-nginx
+
+docker rmi -f `docker images | grep 'clownlee/phpserv-nginx' | awk '{print $3}'`
