@@ -11,9 +11,9 @@ fi
 
 cd $path
 docker build -t clownlee/phpserv-php .
-docker run --name change-php -d -p 9000:9000 -v $www/php7.4.7/pro:/www/pro:rw clownlee/phpserv-php
+docker run --name change-php -d -p 9000:9000 -v $www/pro:/www/pro:rw clownlee/phpserv-php
 
 # nginx
 cd $www/nginx1.16.0
 docker build -t clownlee/phpserv-nginx .
-docker run --name change-nginx -d -p 80:80 -v $www/php7.4.7/pro:/www/pro:rw --link change-php:change-php clownlee/phpserv-nginx
+docker run --name change-nginx -d -p 80:80 -v $www/pro:/www/pro:rw --link change-php:change-php clownlee/phpserv-nginx
