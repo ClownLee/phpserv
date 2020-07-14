@@ -41,7 +41,8 @@ COPY ./init/pro.conf /etc/nginx/conf.d/pro.conf
 COPY ./init/composer.phar /usr/local/bin/composer
 #COPY ../pro /www
 RUN chmod -R 0777 /usr/local/bin/composer \
-  && php /usr/local/bin/composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+  && php /usr/local/bin/composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/ \
+  && mkdir /run/nginx
 EXPOSE 443
 EXPOSE 80
 CMD php-fpm -R -D && nginx -g "daemon off;"
