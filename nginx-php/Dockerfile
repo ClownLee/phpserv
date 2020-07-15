@@ -1,4 +1,5 @@
 FROM php:fpm-alpine3.12
+COPY ./exts /exts
 RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
   && apk update \
   && apk add --update --no-cache build-base autoconf \
@@ -12,8 +13,38 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositorie
     nginx \
     #git \
     #nodejs \
-  && pecl install mcrypt mongodb swoole redis \
-  && docker-php-ext-enable mcrypt mongodb swoole redis \
+  # 编译安装 redis
+  && mkdir -p /usr/src/php/ext/redis \
+  && tar zxvf /exts/redis-5.3.1.tgz -C /exts \
+  && mv /exts/redis-5.3.1/* /usr/src/php/ext/redis \
+  && chmod -R 0777 /usr/src/php/ext/redis \
+  && echo 'redis' >> /usr/src/php-available-exts \
+  && docker-php-ext-install -j$(nproc) redis \
+  # 编译安装 mcrypt
+  && mkdir -p /usr/src/php/ext/mcrypt \
+  && tar zxvf /exts/mcrypt-1.0.3.tgz -C /exts \
+  && mv /exts/mcrypt-1.0.3/* /usr/src/php/ext/mcrypt \
+  && chmod -R 0777 /usr/src/php/ext/mcrypt \
+  && echo 'mcrypt' >> /usr/src/php-available-exts \
+  && docker-php-ext-install -j$(nproc) mcrypt \
+  # 编译安装 mongodb
+  && mkdir -p /usr/src/php/ext/mongodb \
+  && tar zxvf /exts/mongodb-1.7.5.tgz -C /exts \
+  && mv /exts/mongodb-1.7.5/* /usr/src/php/ext/mongodb \
+  && chmod -R 0777 /usr/src/php/ext/mongodb \
+  && echo 'mongodb' >> /usr/src/php-available-exts \
+  && docker-php-ext-install -j$(nproc) mongodb \
+  # 编译安装 swoole
+  && mkdir -p /usr/src/php/ext/swoole \
+  && tar zxvf /exts/swoole-4.5.2.tgz -C /exts \
+  && mv /exts/swoole-4.5.2/* /usr/src/php/ext/swoole \
+  && chmod -R 0777 /usr/src/php/ext/swoole \
+  && echo 'swoole' >> /usr/src/php-available-exts \
+  && docker-php-ext-install -j$(nproc) swoole \
+  && rm -rf /exts \
+  # pecl 安装 mcrypt mongodb swoole redis 【很慢】
+  #&& pecl install mcrypt mongodb swoole redis \
+  #&& docker-php-ext-enable mcrypt mongodb swoole redis \
   # 安装 gd 扩展
   && docker-php-ext-configure gd \
   && docker-php-ext-install -j$(nproc) gd \
@@ -41,7 +72,9 @@ COPY ./init/pro.conf /etc/nginx/conf.d/pro.conf
 COPY ./init/composer.phar /usr/local/bin/composer
 #COPY ../pro /www
 RUN chmod -R 0777 /usr/local/bin/composer \
-  && php /usr/local/bin/composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+  && php /usr/local/bin/composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/ \
+  && mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf1 \
+  && mkdir /run/nginx
 EXPOSE 443
 EXPOSE 80
 CMD php-fpm -R -D && nginx -g "daemon off;"
