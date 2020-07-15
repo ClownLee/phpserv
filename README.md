@@ -3,10 +3,13 @@ Dockerfile for php & nginx. php 容器 和 nginx 容器，php-fpm 处理PHP代�
 ## 目录结构
 ![avatar](http://chuantu.xyz/t6/739/1594795366x992249049.png)
 ### Project 1:
+- [hub.docker.com](https://hub.docker.com/r/clownlee/nginx-php) 上的镜像 `docker pull clownlee/nginx-php`
 - 直接 build Dockerfile 创建 nginx 和 php 在一个容器里。
 - nginx 默认配置文件 `/phpserv/nginx-php/init/pro.conf` 
 - web 项目目录为容器内的 `/www/pro/public` 目录下(基于 laravel 和 thinkphp 框架入口目录设计)
 ### Project 2:
+- [hub.docker.com](https://hub.docker.com/r/clownlee/phpserv-nginx) 上的镜像 `docker pull clownlee/phpserv-nginx`
+- [hub.docker.com](https://hub.docker.com/r/clownlee/phpserv-php) 上的镜像 `docker pull clownlee/phpserv-php`
 - 直接运行 ./start 脚本
 - 分别创建两个镜像同时生成并 run 两个容器 change-nginx 和 change-php 实现两容器关联
 - change-nginx 容器的 web 项目目录 `/www/pro/public`（web 项目目录 可在 `/phpserv/two-containers/nginx1.16.0/init/pro.conf` 配置文件中修改） 用于部署静态资源纯前端代码等
